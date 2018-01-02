@@ -1,0 +1,73 @@
+[OSEv3:children]
+masters
+nodes
+etcd
+# glusterfs
+
+[OSEv3:vars]
+timeout=60
+debug_level=1
+ansible_ssh_user=root
+deployment_type=openshift-enterprise
+docker_version="1.12.6"
+containerized=false
+openshift_install_examples=false
+openshift_set_hostname=true
+openshift_release=v3.6
+openshift_use_dnsmasq=true
+openshift_master_api_port=443
+openshift_master_console_port=443
+openshift_clock_enabled=true
+openshift_disable_check=memory_availability,disk_availability,docker_image_availability,docker_storage
+os_firewall_use_firewalld=true
+# GLUSTERFS
+# openshift_storage_glusterfs_is_native=true
+# openshift_storage_glusterfs_storageclass=true
+# openshift_storage_glusterfs_heketi_topology_load=true
+# openshift_storage_glusterfs_heketi_is_native=true
+# openshift_storage_glusterfs_block_deploy=true
+# openshift_storage_glusterfs_block_host_vol_create=true
+# openshift_storage_glusterfs_block_host_vol_size=5
+# METRICS
+openshift_metrics_install_metrics=true
+openshift_metrics_storage_kind=nfs
+openshift_metrics_storage_access_modes=['ReadWriteOnce']
+openshift_metrics_storage_host=richternfs.unclemarc.local
+openshift_metrics_storage_nfs_directory=/volume1/ocpmet
+openshift_metrics_storage_volume_name=metrics
+openshift_metrics_storage_volume_size=10Gi
+openshift_metrics_hawkular_hostname=hawkular-metrics.apps.hans.unclemarc.local
+
+osm_use_cockpit=true
+osm_cockpit_plugins=['cockpit-kubernetes']
+
+openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/openshift-passwd'}]
+openshift_master_htpasswd_file=/etc/ansible/openshift-passwd
+
+os_sdn_network_plugin_name='redhat/openshift-ovs-multitenant'
+osm_cluster_network_cidr=10.1.0.0/16
+openshift_portal_net=172.30.0.0/16
+
+openshift_master_cluster_method=native
+openshift_master_cluster_hostname=hans.unclemarc.local
+openshift_master_cluster_public_hostname=hconsole.unclemarc.local
+openshift_master_default_subdomain=apps.hans.unclemarc.local
+
+osm_default_node_selector='region=primary'
+openshift_hosted_router_selector='region=infra'
+openshift_hosted_router_replicas=1
+openshift_hosted_registry_selector='region=infra'
+openshift_hosted_registry_replicas=1
+
+[masters]
+hans.unclemarc.local openshift_ip=192.168.50.230 openshift_schedulable=False
+
+[etcd]
+hans.unclemarc.local openshift_ip=192.168.50.230
+
+[nodes]
+hans.unclemarc.local openshift_ip=192.168.50.230 openshift_node_labels="{'region': 'management', 'logging-infra-fluentd': 'true'}"
+hanshost1.unclemarc.local openshift_ip=192.168.50.231 storage=true openshift_node_labels="{'region': 'infra', 'zone': 'default', 'logging-infra-fluentd': 'true'}"
+hanshost2.unclemarc.local openshift_ip=192.168.50.232 storage=true openshift_node_labels="{'region': 'primary', 'zone': 'default', 'logging-infra-fluentd': 'true'}"
+hanshost3.unclemarc.local openshift_ip=192.168.50.233 storage=true openshift_node_labels="{'region': 'primary', 'zone': 'default', 'logging-infra-fluentd': 'true'}"
+
